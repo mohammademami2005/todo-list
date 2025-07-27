@@ -52,7 +52,12 @@ export function addNewList(listName) {
 
         let setNewTaskToServer = {
             name: listName,
-            id: maxId + 1
+            id: maxId + 1,
+            cards: {
+                name: "",
+                description: null,
+                state: null, //انجام شده یا انجام نشده
+            }
         }
         myData.push(setNewTaskToServer)
         localStorage.setItem("tasksList", JSON.stringify(myData))
@@ -105,14 +110,32 @@ export function showTasks(listName) {
 
 export function addCart(val, parent) {
     const newItem = document.createElement("li")
+    newItem.classList.add("cartNewItem")
     const newItemContent = `
-    <li class="cartNewItem">
-        <input type="checkbox" name="" id="">
         <p>${val}</p>
+        <input type="checkbox" >
         <span>edit</span>
-    </li>
    `
     newItem.innerHTML = newItemContent
     parent.appendChild(newItem)
     document.querySelector(".add-to-card-container").remove()
+
+    let checkbox = newItem.querySelector("input")
+    checkbox.addEventListener("click", (e) => {
+        e.target.checked ? e.target.previousElementSibling.style.color = "red" : e.target.previousElementSibling.style.color = "black"
+    })
+
+    let editBtn = newItem.querySelector("span")
+    editBtn.addEventListener('click', (e) => {
+        let editPromp = document.createElement("input")
+        let parent = e.target.parentElement
+        parent.appendChild(editPromp)
+        editPromp.addEventListener("input", () => {
+            let cartName = e.target.parentElement.querySelector("p").textContent
+            console.log(cartName);
+
+            e.target.value
+        })
+    })
+
 }
