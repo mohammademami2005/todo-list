@@ -3,6 +3,7 @@ const addListLi = document.querySelector("#addListLi")
 let myData = JSON.parse(localStorage.getItem("tasksList")) || [];
 let newList;
 let div;
+
 export function addList() {
     myData.forEach(element => {
         showTasks(element.name)
@@ -53,11 +54,7 @@ export function addNewList(listName) {
         let setNewTaskToServer = {
             name: listName,
             id: maxId + 1,
-            cards: {
-                name: "",
-                description: null,
-                state: null, //انجام شده یا انجام نشده
-            }
+            cards: []
         }
         myData.push(setNewTaskToServer)
         localStorage.setItem("tasksList", JSON.stringify(myData))
@@ -102,40 +99,80 @@ export function showTasks(listName) {
             } else {
                 let btn = event.target
                 let ul = btn.parentElement.parentElement.querySelector("ul")
-                addCart(addCartInp, ul)
+                addCart(addCartInp, ul, listName)
+
+
             }
         })
     })
 }
 
-export function addCart(val, parent) {
+export function addCart(val, parent, listName) {
     const newItem = document.createElement("li")
     newItem.classList.add("cartNewItem")
     const newItemContent = `
         <p>${val}</p>
         <input type="checkbox" >
-        <span>edit</span>
+        <span>🖋️</span>
    `
     newItem.innerHTML = newItemContent
     parent.appendChild(newItem)
     document.querySelector(".add-to-card-container").remove()
 
+    let localList = myData.find(item => item.name === listName);
+
+    localList.cards.push({
+        name: val,
+        description: null,
+        state: false
+    });
+    localStorage.setItem("tasksList", JSON.stringify(myData));
+
+
     let checkbox = newItem.querySelector("input")
     checkbox.addEventListener("click", (e) => {
-        e.target.checked ? e.target.previousElementSibling.style.color = "red" : e.target.previousElementSibling.style.color = "black"
+        // e.target.checked ? e.target.previousElementSibling.style.color = "red" : e.target.previousElementSibling.style.color = "black"
+        if (e.target.checked) {
+            localList.cards.state = true
+        } else {
+            localList.cards.state = false
+
+        }
     })
+
+
+
 
     let editBtn = newItem.querySelector("span")
     editBtn.addEventListener('click', (e) => {
-        let editPromp = document.createElement("input")
-        let parent = e.target.parentElement
-        parent.appendChild(editPromp)
-        editPromp.addEventListener("input", () => {
-            let cartName = e.target.parentElement.querySelector("p").textContent
-            console.log(cartName);
+        let exsitInput = newItem.querySelector(".editPromp")
 
-            e.target.value
-        })
+        if (!exsitInput) {
+            let editPromp = document.createElement("input")
+            editPromp.classList.add("editPromp")
+            editPromp.value = newItem.querySelector("p").textContent;
+            newItem.appendChild(editPromp)
+            editBtn.innerHTML = "✅"
+            editPromp.addEventListener("input", () => {
+                newItem.querySelector("p").textContent = editPromp.value
+                let card = localList.find(c => c.name = listName)
+                if (card) {
+                    card.name = editPromp.value
+                    localStorage.setItem("tasksList", JSON.stringify(myData))
+
+                }
+            })
+        } else {
+            exsitInput.remove()
+            exsitInput.innerHTML = "🖋️"
+            console.log(myData);
+        }
+
+
+        console.log(myData);
     })
+
+    console.log(myData);
+
 
 }

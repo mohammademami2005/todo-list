@@ -218,3 +218,9 @@ body {
   align-items: center;
   background-color: red;
 }
+
+.editPromp{
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+}
