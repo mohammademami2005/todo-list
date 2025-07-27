@@ -1,3 +1,4 @@
+import { addList } from './components/addList'
 import './style/style.css'
 // import javascriptLogo from './javascript.svg'
 // import viteLogo from '/vite.svg'
@@ -22,3 +23,4 @@ import './style/style.css'
 // `
 
 // // setAllert(document.querySelector('#counter'))
+addList()
