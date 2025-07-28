@@ -1,178 +1,302 @@
-const tasksContainer = document.querySelector("ul#taskContainer")
-const addListLi = document.querySelector("#addListLi")
+// انتخاب کانتینر اصلی برای نمایش تمام لیست‌ها (Board)
+const tasksContainer = document.querySelector("ul#taskContainer");
+
+// انتخاب دکمه‌ای که به کاربر اجازه می‌دهد یک لیست جدید بسازد
+const addListLi = document.querySelector("#addListLi");
+
+// بارگذاری داده‌ها از localStorage یا مقدار پیش‌فرض در صورت نبود داده
 let myData = JSON.parse(localStorage.getItem("tasksList")) || [];
+
+// تعریف متغیرهای عمومی برای استفاده‌های بعدی در DOM
 let newList;
 let div;
+let newItem;
+let parent;
 
+/**
+ * لود اولیه لیست‌ها و کارت‌ها از localStorage هنگام اجرای صفحه.
+ * همچنین اضافه کردن قابلیت "Add List".
+ */
 export function addList() {
+    // نمایش تمام لیست‌های ذخیره‌شده و کارت‌های داخل آن‌ها
     myData.forEach(element => {
-        showTasks(element.name)
+        const ul = showTasks(element.name); // ساخت لیست جدید در DOM
+        element.cards.forEach(card => {
+            showCart(card.name, ul, element.name); // نمایش کارت‌های مربوط به لیست
+        });
     });
 
-    let x = tasksContainer.children.length
-    addListLi.textContent = x > 1 ? "add another list" : "add a list"
+    // تنظیم متن دکمه "Add List" با توجه به وجود یا نبود لیست
+    let x = tasksContainer.children.length;
+    addListLi.textContent = x > 1 ? "add another list" : "add a list";
 
+    // رویداد کلیک روی دکمه اضافه‌کردن لیست جدید
     addListLi.addEventListener("click", () => {
-        div = document.createElement("div")
-        div.classList.add("addListPromp")
-        const newListPromp = `
+        // ایجاد فرم ورودی برای ساخت لیست جدید
+        div = document.createElement("div");
+        div.classList.add("addListPromp");
+
+        div.innerHTML = `
             <input type="text" autofocus/>
             <button>add list</button>
             <button>close</button>
-        `
-        div.innerHTML = newListPromp
+        `;
 
-        div.addEventListener("click", (e) => {
-            e.stopPropagation()
-        })
-        addListLi.appendChild(div)
-        let addListBtnInPromp = div.children[1]
+        // جلوگیری از بسته‌شدن ناخواسته فرم هنگام کلیک داخل آن
+        div.addEventListener("click", (e) => e.stopPropagation());
+        addListLi.appendChild(div);
+
+        // دکمه ثبت لیست جدید
+        let addListBtnInPromp = div.children[1];
         addListBtnInPromp.addEventListener("click", () => {
-            let inpVal = document.querySelector(".addListPromp>input").value.trim()
-            let isDoblicate = myData.some(element => element.name === inpVal)
-            if (isDoblicate) {
-                alert("This list already exists.")
-                document.querySelector(".addListPromp>input").focus()
-            } else addNewList(inpVal)
-        })
-        let closeBtn = div.children[2]
+            let inpVal = div.querySelector("input").value.trim();
+            let isDuplicate = myData.some(el => el.name === inpVal);
+            if (isDuplicate) {
+                alert("This list already exists.");
+                div.querySelector("input").focus();
+            } else {
+                addNewList(inpVal);
+            }
+        });
+
+        // دکمه بستن فرم اضافه‌کردن لیست
+        let closeBtn = div.children[2];
         closeBtn.addEventListener("click", (e) => {
-            e.stopPropagation()
-            div.remove()
-        })
-    })
+            e.stopPropagation();
+            div.remove();
+        });
+    });
 }
 
+/**
+ * افزودن لیست جدید به localStorage و نمایش آن در UI
+ */
 export function addNewList(listName) {
-    if (listName == false || "") {
-        alert("لطفا فیلد را پر کنید")
-        document.querySelector(".addListPromp>input").focus()
-    } else {
-        showTasks(listName)
-        let maxId = myData.reduce((acc, item) => item.id > acc ? item.id : acc, 0);
-
-        let setNewTaskToServer = {
-            name: listName,
-            id: maxId + 1,
-            cards: []
-        }
-        myData.push(setNewTaskToServer)
-        localStorage.setItem("tasksList", JSON.stringify(myData))
-        div.remove()
-
+    if (!listName) {
+        alert("لطفا فیلد را پر کنید");
+        document.querySelector(".addListPromp>input").focus();
+        return;
     }
+
+    showTasks(listName);
+
+    // تعیین بزرگ‌ترین ID موجود برای دادن ID جدید
+    let maxId = myData.reduce((acc, item) => item.id > acc ? item.id : acc, 0);
+
+    let newListObj = {
+        name: listName,
+        id: maxId + 1,
+        cards: []
+    };
+
+    // افزودن لیست جدید به داده‌ها و ذخیره در localStorage
+    myData.push(newListObj);
+    localStorage.setItem("tasksList", JSON.stringify(myData));
+    div.remove();
 }
 
+/**
+ * ساخت و نمایش یک لیست جدید (شامل کارت‌های درون آن) در DOM
+ */
 export function showTasks(listName) {
-    newList = document.createElement("li")
-    let newListContent = `
+    const newList = document.createElement("li");
+    newList.innerHTML = `
         <div class="newListContentHead">
             <p>${listName}</p>
             <button>...</button>
         </div>
         <ul></ul>
         <button class="btn">add a card</button>
-    `
-    newList.innerHTML = newListContent
-    tasksContainer.prepend(newList)
-    let addToCartBtn = newList.querySelector("button.btn")
+    `;
 
-    addToCartBtn.addEventListener("click", (e) => {
-        let btn = e.target
-        let parent = btn.parentElement
+    // منوی هدر آیتم
+    const menuItemBtn = newList.querySelector("div>button")
+    menuItemBtn.addEventListener("click", (e) => {
+        if(menuItemBtn.disabled) return
 
-        let container = document.createElement("div")
-        container.classList.add("add-to-card-container")
-        const promp = `
+        menuItemBtn.disabled = true
+
+        let menuItem = document.createElement("div")
+        menuItem.classList.add("ListmenuItem")
+        menuItem.innerHTML = `
+        <div>
+            list action <span>❌</span>
+        </div>
+        <button>delete</button>
+        <button>edit item name</button>
+        <button>minize</button>
+       `
+        newList.querySelector("div").prepend(menuItem)
+        menuItem.querySelector("div>span").addEventListener('click' ,()=>{
+            menuItem.remove()
+            menuItemBtn.disabled = false
+        })
+    },true)
+
+    tasksContainer.prepend(newList); // اضافه کردن به ابتدای لیست‌ها
+
+    const addToCartBtn = newList.querySelector("button.btn");
+    const cardsContainer = newList.querySelector("ul");
+
+    // نمایش فرم افزودن کارت هنگام کلیک روی "add a card"
+    addToCartBtn.addEventListener("click", () => {
+        const container = document.createElement("div");
+        container.classList.add("add-to-card-container");
+        container.innerHTML = `
             <input type="text" autofocus/>
             <button>add card</button>
             <button>X</button>
-        `
-        container.innerHTML = promp
-        parent.appendChild(container)
-        const addCardBtn = parent.lastElementChild.firstElementChild.nextElementSibling
-        addCardBtn.addEventListener("click", (event) => {
-            const addCartInp = parent.lastElementChild.firstElementChild.value
-            if (addCartInp == false || "") {
-                alert("poresh kon")
-                parent.lastElementChild.firstElementChild.focus()
-            } else {
-                let btn = event.target
-                let ul = btn.parentElement.parentElement.querySelector("ul")
-                addCart(addCartInp, ul, listName)
+        `;
 
+        newList.appendChild(container);
 
+        const input = container.querySelector("input");
+        const addCardBtn = container.querySelector("button");
+
+        // افزودن کارت به لیست
+        addCardBtn.addEventListener("click", () => {
+            const value = input.value.trim();
+            if (!value) {
+                alert("لطفا فیلد را پر کنید");
+                input.focus();
+                return;
             }
-        })
-    })
+            addCart(value, cardsContainer, listName);
+        });
+
+        // بستن فرم افزودن کارت
+        container.querySelector("button:last-child").addEventListener("click", () => container.remove());
+    });
+
+    return cardsContainer;
 }
 
+/**
+ * اضافه کردن کارت جدید به لیست خاص و ذخیره آن در localStorage
+ */
 export function addCart(val, parent, listName) {
-    const newItem = document.createElement("li")
-    newItem.classList.add("cartNewItem")
-    const newItemContent = `
-        <p>${val}</p>
-        <input type="checkbox" >
-        <span>🖋️</span>
-   `
-    newItem.innerHTML = newItemContent
-    parent.appendChild(newItem)
-    document.querySelector(".add-to-card-container").remove()
+    showCart(val, parent, listName); // نمایش کارت در UI
 
     let localList = myData.find(item => item.name === listName);
 
+    // ذخیره کارت جدید در داده‌ها
     localList.cards.push({
         name: val,
         description: null,
         state: false
     });
+
     localStorage.setItem("tasksList", JSON.stringify(myData));
+}
+
+/**
+ * نمایش یک کارت در لیست مشخص به همراه قابلیت ویرایش و تیک‌زدن
+ */
+export function showCart(val, parent, listName) {
+    const newItem = document.createElement("li");
+    newItem.classList.add("cartNewItem");
+
+    newItem.innerHTML = `
+        <p>${val}</p>
+        <input type="checkbox">
+        <span>🖋️</span>
+    `;
+
+    parent.appendChild(newItem);
+
+    // حذف فرم اضافه‌کردن کارت (در صورتی که باز باشه)
+    const container = parent.parentElement.querySelector(".add-to-card-container");
+    if (container) container.remove();
+
+    const localList = myData.find(item => item.name === listName);
+    const checkbox = newItem.querySelector("input");
 
 
-    let checkbox = newItem.querySelector("input")
     checkbox.addEventListener("click", (e) => {
-        // e.target.checked ? e.target.previousElementSibling.style.color = "red" : e.target.previousElementSibling.style.color = "black"
-        if (e.target.checked) {
-            localList.cards.state = true
-        } else {
-            localList.cards.state = false
+        const card = localList.cards.find(c => c.name === val);
+        if (card) {
+            card.state = e.target.checked;
+            localStorage.setItem("tasksList", JSON.stringify(myData));
 
+            // حذف span قدیمی اگه هست
+            const existingSpan = newItem.querySelector(".cartItemChecked");
+            if (existingSpan) existingSpan.remove();
+
+            if (card.state) {
+                const newSpan = document.createElement("span");
+                newSpan.classList.add("cartItemChecked");
+                // newSpan.textContent = "✔"; // یا هر چیزی که بخوای
+                // newSpan.style.width= "100%"
+
+                newItem.appendChild(newSpan);
+                newItem.style.position = "relative";
+                // تاخیر کوتاه برای اجرای ترنزیشن
+                setTimeout(() => {
+                    newSpan.style.width = "100%"; // باعث اعمال width: 100% با transition
+                }, 10); // 10 میلی‌ثانیه کافیه
+            }
         }
-    })
+    });
 
 
+    // تعیین وضعیت تیک بر اساس داده‌های قبلی
+    const existingCard = localList.cards.find(c => c.name === val);
+    checkbox.checked = existingCard?.state ?? false;
+    if (checkbox.checked) {
+        existingCard?.state ?? false
+        const newSpan = document.createElement("span")
+        newSpan.classList.add("cartItemChecked")
+        newItem.appendChild(newSpan)
+        newItem.style.position = "relative"
+        newSpan.style.width = "100%"
+    }
 
+    // ذخیره وضعیت کارت هنگام تیک‌زدن
+    checkbox.addEventListener("click", (e) => {
+        const card = localList.cards.find(c => c.name === val);
+        if (card) {
+            card.state = e.target.checked;
+            localStorage.setItem("tasksList", JSON.stringify(myData));
+        }
+    });
 
-    let editBtn = newItem.querySelector("span")
-    editBtn.addEventListener('click', (e) => {
-        let exsitInput = newItem.querySelector(".editPromp")
+    // ویرایش کارت (نام کارت)
+    const editBtn = newItem.querySelector("span");
+    editBtn.addEventListener('click', () => {
+        const existingInput = newItem.querySelector(".editPromp");
 
-        if (!exsitInput) {
-            let editPromp = document.createElement("input")
-            editPromp.classList.add("editPromp")
-            editPromp.value = newItem.querySelector("p").textContent;
-            newItem.appendChild(editPromp)
-            editBtn.innerHTML = "✅"
-            editPromp.addEventListener("input", () => {
-                newItem.querySelector("p").textContent = editPromp.value
-                let card = localList.find(c => c.name = listName)
+        if (!existingInput) {
+            // شروع ویرایش
+            const editInput = document.createElement("input");
+            editInput.classList.add("editPromp");
+
+            const currentValue = newItem.querySelector("p").textContent;
+            editInput.value = currentValue;
+
+            // ذخیره مقدار قبلی برای بروزرسانی درست در localStorage
+            newItem.setAttribute("data-oldname", currentValue);
+
+            newItem.appendChild(editInput);
+            editBtn.textContent = "✅";
+
+        } else {
+            // پایان ویرایش
+            const newValue = existingInput.value.trim();
+            const oldValue = newItem.getAttribute("data-oldname");
+
+            if (newValue) {
+                newItem.querySelector("p").textContent = newValue;
+
+                const card = localList.cards.find(c => c.name === oldValue);
                 if (card) {
-                    card.name = editPromp.value
-                    localStorage.setItem("tasksList", JSON.stringify(myData))
-
+                    card.name = newValue;
+                    localStorage.setItem("tasksList", JSON.stringify(myData));
                 }
-            })
-        } else {
-            exsitInput.remove()
-            exsitInput.innerHTML = "🖋️"
-            console.log(myData);
+            }
+
+            existingInput.remove();
+            editBtn.textContent = "🖋️";
+            newItem.removeAttribute("data-oldname");
         }
-
-
-        console.log(myData);
-    })
-
-    console.log(myData);
-
-
+    });
 }
