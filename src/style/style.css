@@ -28,10 +28,11 @@ body {
   padding-inline: 1vw;
 }
 
-ul{
+ul {
   list-style-type: none;
 }
-li{
+
+li {
   list-style-type: none;
 }
 
@@ -263,8 +264,8 @@ li{
   /* background-color: red; */
   position: relative;
 
-  .ListmenuItem{
-    width: 60%;
+  .ListmenuItem {
+    width: 100%;
     display: flex;
     justify-content: start;
     /* align-items: center; */
@@ -273,15 +274,27 @@ li{
     position: absolute;
     left: 90%;
     top: 0;
-    background-color:#5a5454;
+    background-color: #5a5454;
     padding: 5%;
     z-index: 2999;
 
-    >button{
+    >div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      >.removeCart {
+        cursor: pointer;
+        font-size: 14px;
+      }
+    }
+
+    >button {
       width: 90%;
-      height: 20%;
+      height: 35px;
       font-size: 14px;
-      display: flex;justify-content: center;align-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }
@@ -294,7 +307,7 @@ li{
   left: 1px;
   top: 50%;
   height: 3px;
-  background-color:thistle ;
+  background-color: thistle;
   transition: all 1s;
   pointer-events: none;
 }
@@ -310,4 +323,11 @@ li{
 ::-webkit-scrollbar-thumb {
   background: rgba(22, 102, 177, 0.507);
   border-radius: 4px;
+}
+
+
+.hideLI{
+  opacity: 0;
+  transform: translateX(5000px);
+  transition: 2s;
 }

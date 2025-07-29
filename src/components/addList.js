@@ -120,16 +120,27 @@ export function showTasks(listName) {
         menuItem.classList.add("ListmenuItem")
         menuItem.innerHTML = `
         <div>
-            list action <span>❌</span>
+            list action <span class=removeCart>❌</span>
         </div>
-        <button>delete</button>
-        <button>edit item name</button>
-        <button>minize</button>
+        <button id='delete'>delete</button>
+        <button id="edit">edit item name</button>
+        <button id='minimize'>minimize</button>
        `
         newList.querySelector("div").prepend(menuItem)
-        menuItem.querySelector("div>span").addEventListener('click' ,()=>{
+        menuItem.querySelector("div>span").addEventListener('click' ,(e)=>{
             menuItem.remove()
             menuItemBtn.disabled = false
+        })
+        menuItem.querySelector("button#delete").addEventListener('click' , (e)=>{
+            let cart =  e.target.parentElement.parentElement.parentElement
+            cart.classList.add("hideLI")
+            setTimeout(() => {
+                cart.remove()
+            }, 500);
+
+            console.log(cart);
+            
+            let localList = myData.find(item => item.name == cart.name)
         })
     },true)
 
@@ -225,9 +236,6 @@ export function showCart(val, parent, listName) {
             if (card.state) {
                 const newSpan = document.createElement("span");
                 newSpan.classList.add("cartItemChecked");
-                // newSpan.textContent = "✔"; // یا هر چیزی که بخوای
-                // newSpan.style.width= "100%"
-
                 newItem.appendChild(newSpan);
                 newItem.style.position = "relative";
                 // تاخیر کوتاه برای اجرای ترنزیشن
