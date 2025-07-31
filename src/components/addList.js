@@ -218,13 +218,12 @@ export function showTasks(listName) {
 
                 if (localList) {
                     localList.name = promp.value.trim()
-                    let f = myData = myData.filter(item => item.name !== target.textContent)
-                    myData.push(localList)
+                     myData = myData.filter(item => item.name !== target.textContent)
+                    // myData.push(localList)
 
                     localStorage.setItem("tasksList", JSON.stringify(myData))
 
                     target.textContent = localList.name
-
                     promp.remove()
                     btn.remove()
                 }
