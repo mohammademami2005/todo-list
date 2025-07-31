@@ -151,7 +151,6 @@ export function showTasks(listName) {
         </div>
         <button id='delete'>delete</button>
         <button id="edit">edit item name</button>
-        <button id='minimize'>minimize</button>
        `
         newList.querySelector("div").prepend(menuItem)
         menuItem.querySelector("div>span").addEventListener('click', (e) => {
