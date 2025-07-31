@@ -220,7 +220,8 @@ export function showTasks(listName) {
                     localList.name = promp.value.trim()
                      myData = myData.filter(item => item.name !== target.textContent)
                     // myData.push(localList)
-
+                     console.log("hi");
+                     
                     localStorage.setItem("tasksList", JSON.stringify(myData))
 
                     target.textContent = localList.name
