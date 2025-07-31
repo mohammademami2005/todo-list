@@ -6,8 +6,8 @@ footer.circle-footer {
     /* background: linear-gradient(to top, #ffffff8c -59%, transparent); */
     /* background: radial-gradient(#111 -50%, transparent); */
     position: absolute;
-    right: 5%;
-    bottom: 5%;
+    right: 1%;
+    bottom: 1%;
     cursor: pointer;
 }
 
