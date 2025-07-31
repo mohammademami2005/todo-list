@@ -166,30 +166,16 @@ export function showTasks(listName) {
             let cart = e.target.parentElement.parentElement.parentElement
             let content = e.target.parentElement.parentElement
             content = content.querySelector("p").textContent
-
             let localList = myData.find(item => item.name == content)
             myData = myData.filter(item => item.name !== content)
-            console.log(myData);
-
             localStorage.setItem("tasksList", JSON.stringify(myData))
-
-
-            console.log(localList);
             trashContainer.push(localList)
-            console.log(trashContainer);
-
             localStorage.setItem("trash", JSON.stringify(trashContainer))
-
             menuItem.remove()
             cart.classList.add("hideLI")
             setTimeout(() => {
                 cart.remove()
             }, 500);
-
-            // console.log(content);
-
-
-
         })
 
         // edit list 
@@ -210,7 +196,7 @@ export function showTasks(listName) {
 
             btn.addEventListener("click", () => {
                 let localList = myData.find(item => item.name == target.textContent)
-                console.log(localList, "ll");
+
                 if (!promp.value.trim()) {
                     alert('please inter new name')
                     return
@@ -220,7 +206,6 @@ export function showTasks(listName) {
                     localList.name = promp.value.trim()
                      myData = myData.filter(item => item.name !== target.textContent)
                     // myData.push(localList)
-                     console.log("hi");
                      
                     localStorage.setItem("tasksList", JSON.stringify(myData))
 

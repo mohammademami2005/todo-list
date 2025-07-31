@@ -12,12 +12,12 @@ export function trash() {
         ul.classList.add("flexCenter")
     }
 
-    trashContainer.forEach(element => {
+    trashContainer.forEach(item => {
         let li = document.createElement("li")
         li.classList.add("trashLI")
         li.innerHTML = `
         <div>
-        <p>${element.name}</p>
+        <p>${item.name}</p>
         <button>Restore</button>
         </div>
         <ul class="cardsContainer"></ul>
@@ -36,19 +36,13 @@ export function trash() {
         restoreBtn.addEventListener("click", (e) => {
             let content = e.target.previousElementSibling.textContent
             let trashList = trashContainer.find(item => item.name == content)
-            console.log(trashList)
             trashContainer = trashContainer.filter(item => item.name !== content)
-
-
-
             localStorage.setItem("trash", JSON.stringify(trashContainer))
-
-
             li.classList.add("hideLI")
             setTimeout(() => {
                 li.remove()
             }, 1000);
-            
+    
             myData.push(trashList)
             
             localStorage.setItem("tasksList", JSON.stringify(myData))
@@ -57,10 +51,5 @@ export function trash() {
 
 
     });
-
-
-
-
-
 }
 trash()
