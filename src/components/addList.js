@@ -6,9 +6,6 @@ const tasksContainer = document.querySelector("ul#taskContainer");
 const navItems = document.querySelectorAll("nav > ul > li")
 const sections = document.querySelectorAll("#todoContainer > section")
 
-
-
-
 // انتخاب دکمه‌ای که به کاربر اجازه می‌دهد یک لیست جدید بسازد
 const addListLi = document.querySelector("#addListLi");
 
