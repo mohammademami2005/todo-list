@@ -1,6 +1,6 @@
 const ul = document.querySelector("#trashUl")
 let myData = JSON.parse(localStorage.getItem("tasksList")) || [];
-let trashContainer = JSON.parse(localStorage.getItem("trash")) || [];
+let trashContainer = (JSON.parse(localStorage.getItem("trash")) || []).filter(item => item !== null);  // ← فقط این خط تغییر کرده
 console.log(trashContainer);
 
 export function trash() {
@@ -45,6 +45,6 @@ export function trash() {
             })
         });
     }
-
 }
+
 trash()
