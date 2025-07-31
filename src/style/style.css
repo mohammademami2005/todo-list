@@ -42,7 +42,11 @@ li {
   margin: 0 auto;
   padding: 1rem;
   text-align: center;
-  background-color: darkgray;
+  background-image: linear-gradient(to right, #6366F1, #FBBF24);
+  /* background-color: rgba(127, 255, 212, 0.363); */
+  /* background-image: url(../../public/img/bg.jpg); */
+  /* background-size: cover; */
+  backdrop-filter: blur(20px);
   border-radius: 2rem;
   display: flex;
   gap: 10px;
@@ -97,25 +101,30 @@ li {
 
   >section#todoContainer {
     width: 85vw;
-    background-color: #2424245d;
+    background-color: rgba(0, 0, 0, 0.141);
+    /* border: 1px solid white; */
     border-radius: 1rem;
     height: 100%;
     position: relative;
+    overflow: hidden;
 
     >section {
       position: absolute;
       /* background-color: red; */
       width: 100%;
       height: 100%;
-      top: 0;
-    }
-
-    >section#home {
-      left: -200%;
-    }
-
-    >section#tasks {
       left: 0;
+      transition: .7s ease-in-out;
+      padding-block: 1%;
+
+    }
+
+
+
+
+    >section.tasks {
+      top: -100%;
+      opacity: 0;
       overflow: hidden;
 
       >ul#taskContainer {
@@ -128,7 +137,6 @@ li {
         overflow-x: auto;
         gap: 2%;
         padding: 5% 2%;
-
 
         >li {
           min-width: 25%;
@@ -150,6 +158,37 @@ li {
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            cursor: pointer;
+
+            .addListPromp {
+              width: 100%;
+              height: 100%;
+              padding: 5%;
+
+              >input {
+                width: 80%;
+                height: 29px;
+                margin: 2% auto;
+              }
+
+              >button {
+                border: none;
+                /* width: 29%; */
+                padding: 5%;
+                margin: 5%;
+                border-radius: 5%;
+
+                &:first-of-type {
+                  background-color: #242424;
+                  /* margin-right: 20%; */
+                }
+
+                &:last-of-type {
+                  background-color: #08124b;
+
+                }
+              }
+            }
           }
 
           .btn {
@@ -161,42 +200,78 @@ li {
       }
     }
 
-    >section#empty {
-      left: -200%;
-    }
 
     >section#trash {
-      left: -200%;
+      top: -100%;
+      opacity: 0;
+
+      >h1 {}
+
+      >ul {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+        align-items: start;
+        overflow-x: auto;
+        gap: 2%;
+        padding: 5% 2%;
+        /* overflow-x: auto; */
+
+
+        >li.trashLI {
+          min-width: 30%;
+          width: auto;
+          min-height: 25%;
+          height: auto;
+          background-color: #24242493;
+          /* flex-shrink: unset; */
+          flex: none;
+          border-radius: 25px;
+          overflow: hidden;
+          transition: 1s ease-in-out;
+
+
+
+          >div {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            width: 100%;
+            height: 50px;
+
+          }
+
+          >ul {
+            list-style-type: none;
+            /* display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+            overflow: hidden; */
+            /* width: 100%;
+            margin-block:2% ;
+            height: 100%; */
+            padding: 2%;
+
+
+            >li {
+              width: 100%;
+              height: 25px;
+              border-block: 1px solid rgb(121, 117, 117);
+              display: flex;
+              justify-content: start;
+              align-items: center;
+            }
+          }
+        }
+      }
     }
   }
 }
 
-.addListPromp {
-  width: 100%;
-  height: 100%;
-  padding: 5%;
 
-  >input {
-    width: 80%;
-    height: 29px;
-    margin: 2% auto;
-  }
-
-  >button {
-    border: none;
-    width: 29%;
-
-    &:first-of-type {
-      background-color: #242424;
-      margin-right: 20%;
-    }
-
-    &:last-of-type {
-      background-color: #08124b;
-
-    }
-  }
-}
 
 .add-to-card-container {
   width: 100%;
@@ -263,6 +338,22 @@ li {
   align-items: center;
   /* background-color: red; */
   position: relative;
+  flex-wrap: wrap;
+
+  >input {
+
+    display: flex;
+    width: 80%;
+    height: 20px;
+  }
+
+  >button{
+    width: 18%;
+    font-size: 18px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+  }
 
   .ListmenuItem {
     width: 100%;
@@ -282,6 +373,7 @@ li {
       display: flex;
       justify-content: space-between;
       align-items: center;
+
       >.removeCart {
         cursor: pointer;
         font-size: 14px;
@@ -326,8 +418,21 @@ li {
 }
 
 
-.hideLI{
+.hideLI {
   opacity: 0;
-  transform: translateX(5000px);
-  transition: 2s;
+  transform: rotate(-180deg)translateX(-5000px);
+  transition: 2s ease-in-out;
+}
+
+.sectionTransition {
+  opacity: 1 !important;
+  top: 0 !important;
+  z-index: 1 !important;
+}
+
+.flexCenter {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 100% !important;
 }

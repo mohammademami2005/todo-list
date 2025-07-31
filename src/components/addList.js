@@ -1,11 +1,22 @@
+import { trash } from "./trash";
+
 // انتخاب کانتینر اصلی برای نمایش تمام لیست‌ها (Board)
 const tasksContainer = document.querySelector("ul#taskContainer");
+
+const navItems = document.querySelectorAll("nav > ul > li")
+const sections = document.querySelectorAll("#todoContainer > section")
+
+
+
 
 // انتخاب دکمه‌ای که به کاربر اجازه می‌دهد یک لیست جدید بسازد
 const addListLi = document.querySelector("#addListLi");
 
 // بارگذاری داده‌ها از localStorage یا مقدار پیش‌فرض در صورت نبود داده
 let myData = JSON.parse(localStorage.getItem("tasksList")) || [];
+
+// گرفتن موارد حذف شده از لوکال استرویج
+let trashContainer = JSON.parse(localStorage.getItem("trash")) || [];
 
 // تعریف متغیرهای عمومی برای استفاده‌های بعدی در DOM
 let newList;
@@ -18,6 +29,25 @@ let parent;
  * همچنین اضافه کردن قابلیت "Add List".
  */
 export function addList() {
+
+    //نمایش سکشن مورد نظر
+    navItems.forEach((item, i) => {
+
+        item.addEventListener("click", (e) => {
+            localStorage.setItem("trash", JSON.stringify(trashContainer))
+            sections.forEach((section, index) => {
+                if (i === index) {
+                    setTimeout(() => {
+                        section.classList.add("sectionTransition")
+                    }, 400);
+                } else {
+                    section.classList.remove("sectionTransition")
+                }
+            })
+
+        })
+    })
+
     // نمایش تمام لیست‌های ذخیره‌شده و کارت‌های داخل آن‌ها
     myData.forEach(element => {
         const ul = showTasks(element.name); // ساخت لیست جدید در DOM
@@ -73,7 +103,7 @@ export function addList() {
  */
 export function addNewList(listName) {
     if (!listName) {
-        alert("لطفا فیلد را پر کنید");
+        alert("Please fill in the field !");
         document.querySelector(".addListPromp>input").focus();
         return;
     }
@@ -112,7 +142,7 @@ export function showTasks(listName) {
     // منوی هدر آیتم
     const menuItemBtn = newList.querySelector("div>button")
     menuItemBtn.addEventListener("click", (e) => {
-        if(menuItemBtn.disabled) return
+        if (menuItemBtn.disabled) return
 
         menuItemBtn.disabled = true
 
@@ -127,22 +157,82 @@ export function showTasks(listName) {
         <button id='minimize'>minimize</button>
        `
         newList.querySelector("div").prepend(menuItem)
-        menuItem.querySelector("div>span").addEventListener('click' ,(e)=>{
+        menuItem.querySelector("div>span").addEventListener('click', (e) => {
             menuItem.remove()
             menuItemBtn.disabled = false
         })
-        menuItem.querySelector("button#delete").addEventListener('click' , (e)=>{
-            let cart =  e.target.parentElement.parentElement.parentElement
+        // delete list
+        menuItem.querySelector("button#delete").addEventListener('click', (e) => {
+            let cart = e.target.parentElement.parentElement.parentElement
+            let content = e.target.parentElement.parentElement
+            content = content.querySelector("p").textContent
+
+            let localList = myData.find(item => item.name == content)
+            myData = myData.filter(item => item.name !== content)
+            console.log(myData);
+
+            localStorage.setItem("tasksList", JSON.stringify(myData))
+
+
+            console.log(localList);
+            trashContainer.push(localList)
+            console.log(trashContainer);
+
+            localStorage.setItem("trash", JSON.stringify(trashContainer))
+
+            menuItem.remove()
             cart.classList.add("hideLI")
             setTimeout(() => {
                 cart.remove()
             }, 500);
 
-            console.log(cart);
-            
-            let localList = myData.find(item => item.name == cart.name)
+            // console.log(content);
+
+
+
         })
-    },true)
+
+        // edit list 
+        menuItem.querySelector("button#edit").addEventListener("click", (e) => {
+            let target = e.target.parentElement.nextElementSibling
+            let parent = target.parentElement
+
+            // جلوگیری از اضافه کردن مجدد input و button
+            if (parent.querySelector("input.editPromp") || parent.querySelector("button.editConfirm")) {
+                return;
+            }
+            let promp = document.createElement("input")
+            let btn = document.createElement("button")
+            btn.textContent = "✅"
+            promp.classList.add("editPromp")
+            target.parentElement.appendChild(promp)
+            target.parentElement.appendChild(btn)
+
+            btn.addEventListener("click", () => {
+                let localList = myData.find(item => item.name == target.textContent)
+                console.log(localList, "ll");
+                if (!promp.value.trim()) {
+                    alert('please inter new name')
+                    return
+                }
+
+                if (localList) {
+                    localList.name = promp.value.trim()
+                    let f = myData = myData.filter(item => item.name !== target.textContent)
+                    myData.push(localList)
+
+                    localStorage.setItem("tasksList", JSON.stringify(myData))
+
+                    target.textContent = localList.name
+
+                    promp.remove()
+                    btn.remove()
+                }
+
+
+            })
+        })
+    }, true)
 
     tasksContainer.prepend(newList); // اضافه کردن به ابتدای لیست‌ها
 
@@ -307,4 +397,5 @@ export function showCart(val, parent, listName) {
             newItem.removeAttribute("data-oldname");
         }
     });
+
 }
