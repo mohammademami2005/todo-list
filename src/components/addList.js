@@ -32,6 +32,14 @@ export function addList() {
 
         item.addEventListener("click", (e) => {
             localStorage.setItem("trash", JSON.stringify(trashContainer))
+
+            navItems.forEach((li , x)=>{
+                li.classList.remove("liActive")
+                i == x ? li.classList.add("liActive"): undefined
+            })
+
+            
+            
             sections.forEach((section, index) => {
                 if (i === index) {
                     setTimeout(() => {

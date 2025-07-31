@@ -26,6 +26,7 @@ body {
   min-height: 100vh;
   padding-block: 1vh;
   padding-inline: 1vw;
+  position: relative;
 }
 
 ul {
@@ -89,7 +90,20 @@ li {
         border-radius: 10px;
         cursor: pointer;
         color: black;
-        
+        transition: .5s;
+
+        &:hover {
+          border: 1px solid black;
+          color: white;
+          scale: 1.2;
+        }
+
+      }
+
+      .liActive {
+        border: 1px solid black;
+        color: white;
+        /* scale: 1.2; */
       }
     }
 
@@ -348,7 +362,7 @@ li {
     height: 20px;
   }
 
-  >button{
+  >button {
     width: 18%;
     font-size: 18px;
     border: none;
