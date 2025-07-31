@@ -4,14 +4,32 @@ let trashContainer = JSON.parse(localStorage.getItem("trash")) || [];
 
 export function trash() {
 
+    if (!ul) {
+        console.error("عنصر #trashUl پیدا نشد");
+        return;
+    }
+
+    if (!Array.isArray(trashContainer)) {
+        console.error("trashContainer معتبر نیست:", trashContainer);
+        return;
+    }
+
     if (trashContainer.length === 0) {
         ul.textContent = "trash is empty"
         ul.classList.add("flexCenter")
-        return; // جلوگیری از ادامه اجرا
+        return;
     }
 
-    trashContainer.forEach(element => {
-        if (!element || !element.name) return; // بررسی صحت element
+    trashContainer.forEach((element, i) => {
+        if (!element || typeof element !== 'object') {
+            console.warn(`عنصر trashContainer در index ${i} نامعتبر است:`, element);
+            return;
+        }
+
+        if (!element.name) {
+            console.warn(`عنصر name در index ${i} وجود ندارد`, element);
+            return;
+        }
 
         let li = document.createElement("li")
         li.classList.add("trashLI")
@@ -26,8 +44,11 @@ export function trash() {
 
         let cardsContainer = li.querySelector("ul")
         if (Array.isArray(element.cards)) {
-            element.cards.forEach((card) => {
-                if (!card || !card.name) return;
+            element.cards.forEach((card, j) => {
+                if (!card || typeof card !== 'object' || !card.name) {
+                    console.warn(`کارت نامعتبر در لیست ${element.name} index ${j}:`, card)
+                    return;
+                }
                 let newCard = document.createElement("li")
                 newCard.textContent = card.name;
                 cardsContainer.appendChild(newCard)
